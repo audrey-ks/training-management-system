@@ -1,0 +1,79 @@
+@extends('layouts.app')
+@section('title','New Session')
+@section('page-title','Create Training Session')
+
+@section('content')
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-card">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h5 class="mb-0 fw-700"><i class="fa-solid fa-calendar-plus me-2 text-primary"></i>New Training Session</h5>
+                <a href="{{ route('admin.sessions.index') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Back
+                </a>
+            </div>
+            <form action="{{ route('admin.sessions.store') }}" method="POST">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-600 small">Session Title *</label>
+                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                            value="{{ old('title') }}" placeholder="e.g. Laravel Web Development" required>
+                        @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-600 small">Description</label>
+                        <textarea name="description" class="form-control" rows="3"
+                            placeholder="Session overview and objectives…">{{ old('description') }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-600 small">Assign Trainer</label>
+                        <select name="trainer_id" class="form-select">
+                            <option value="">— Unassigned —</option>
+                            @foreach($trainers as $t)
+                                <option value="{{ $t->id }}" {{ old('trainer_id')==$t->id ? 'selected':'' }}>
+                                    {{ $t->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-600 small">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ old('location') }}" placeholder="Room A / Online">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-600 small">Start Date *</label>
+                        <input type="date" name="start_date" class="form-control @error('start_date') is-invalid @enderror"
+                            value="{{ old('start_date') }}" required>
+                        @error('start_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-600 small">End Date *</label>
+                        <input type="date" name="end_date" class="form-control @error('end_date') is-invalid @enderror"
+                            value="{{ old('end_date') }}" required>
+                        @error('end_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-600 small">Max Trainees *</label>
+                        <input type="number" name="max_trainees" class="form-control" value="{{ old('max_trainees',30) }}" min="1" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-600 small">Status *</label>
+                        <select name="status" class="form-select" required>
+                            @foreach(['upcoming','active','completed','cancelled'] as $s)
+                                <option value="{{ $s }}" {{ old('status','upcoming')==$s ? 'selected':'' }}>{{ ucfirst($s) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary text-white px-4">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Create Session
+                    </button>
+                    <a href="{{ route('admin.sessions.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
