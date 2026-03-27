@@ -12,6 +12,12 @@ use App\Http\Controllers\Trainer\MaterialController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ─────────────────────────────────────────
+Route::get('/reset-admin-password', function () {
+    \App\Models\User::where('email', 'admin@tms.com')
+        ->update(['password' => bcrypt('NewPassword123!')]);
+    return 'Password reset successfully!';
+});
+
 Route::get('/', fn() => view('welcome'));
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
