@@ -33,6 +33,8 @@ class MaterialController extends Controller
         $uploadedFile = cloudinary()->upload($file->getRealPath(), [
             'folder' => "sessions/{$session->id}/materials",
             'resource_type' => 'auto',
+            'type'          => 'upload',
+            'access_mode'   => 'public',
             'public_id'     => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
         ]);
 
