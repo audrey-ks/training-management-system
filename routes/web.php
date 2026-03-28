@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ─────────────────────────────────────────
 Route::get('/reset-admin-password', function () {
-    $hash = \Illuminate\Support\Facades\Hash::make('Admin1234!');
-    \App\Models\User::where('id', 1)->update(['password' => $hash]);
-    $user = \App\Models\User::find(1);
-    return 'Hash saved: ' . $user->password;
+    $user           = \App\Models\User::find(1);
+    $user->password = bcrypt('Admin1234!');
+    $user->save();
+    return 'Password in DB: ' . $user->fresh()->password;
 });
 
 Route::get('/', fn() => view('welcome'));
