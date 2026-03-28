@@ -29,7 +29,15 @@ class MaterialController extends Controller
         $file         = $request->file('file');
         $materialType = $this->detectMaterialType($file->getMimeType());
 
-        $path = $file->store("sessions/{$session->id}/materials", 'public');
+        // Upload to Cloudinary
+        $uploadedFile = cloudinary()->upload($file->getRealPath(), [
+            'folder' => "sessions/{$session->id}/materials",
+            'resource_type' => 'auto',
+            'public_id'     => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+        ]);
+
+        $path = $uploadedFile->getSecurePath();
+
         if (empty($path)) {
             return back()->with('error', 'File upload failed. Please check permissions and try again.');
         }
