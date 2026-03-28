@@ -1,7 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Events\UserLoggedIn;
+use App\Events\UserLoggedOut;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,9 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            if (!$user->is_active) {
+            event(new UserLoggedIn($user, $request->ip(), $request->userAgent()));
+
+            if (! $user->is_active) {
                 Auth::logout();
                 return back()->withErrors(['email' => 'Your account has been deactivated.']);
             }
@@ -39,6 +42,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        event(new UserLoggedOut($user, $request->ip(), $request->userAgent()));
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -47,7 +52,7 @@ class AuthController extends Controller
 
     private function redirectByRole(string $role)
     {
-        return match($role) {
+        return match ($role) {
             'admin'   => redirect()->route('admin.dashboard'),
             'trainer' => redirect()->route('trainer.dashboard'),
             'trainee' => redirect()->route('trainee.dashboard'),

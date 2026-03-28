@@ -1,7 +1,15 @@
-# Task: Create Welcome Landing Page
+# Admin Email Notifications on User Login/Logout
 
-**Progress:**
-- [x] 1. Create resources/views/welcome.blade.php (full-hero with image + centered SIGN IN)\n- [x] 2. Update routes/web.php (root '/' → view('welcome'))
-- [x] 3. Test: php artisan route:clear && php artisan view:clear, visit http://localhost/tms/public/
+## Current Progress
+Updated: Plan approved (email to admins).
 
-**Details:** Diverse black professionals working on machines/computers, blue/gray theme match (#004882/#7b7d7f gradients).
+## Remaining Steps
+- Test: Login as non-admin, check admin email (mail.log or storage/logs/laravel.log if MAIL_MAILER=log)
+
+## Completed
+- 1. Events
+- 2. Notifications
+- 3. Listener
+4. EventServiceProvider registered
+- 5. AuthController updated
+
