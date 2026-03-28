@@ -73,6 +73,16 @@ class SessionViewController extends Controller
             abort(403, 'This material is not available.');
         }
 
+        if (empty($material->file_path)) {
+            abort(404, 'File not found.');
+        }
+
+        // If it's a Cloudinary URL, redirect directly to it
+        if (str_starts_with($material->file_path, 'http')) {
+            return redirect($material->file_path);
+        }
+
+        // Fallback for local files
         if (! Storage::disk('public')->exists($material->file_path)) {
             abort(404, 'File not found.');
         }
