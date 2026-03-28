@@ -14,7 +14,7 @@ return [
     'key'             => env('APP_KEY'),
     'cipher'          => 'AES-256-CBC',
 
-    'providers' => [
+    'providers'       => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -40,10 +40,12 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
     ],
 
-    'aliases' => Facade::defaultAliases()->merge([
+    'aliases'         => Facade::defaultAliases()->merge([
         'Storage' => Illuminate\Support\Facades\Storage::class,
         'Str'     => Illuminate\Support\Str::class,
+        'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
     ])->toArray(),
 ];
