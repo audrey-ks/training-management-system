@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
 
 // For Laravel 10 style bootstrap
 $app = new Application(dirname(__DIR__));
@@ -21,5 +19,7 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+
+$app->register(App\Providers\EventServiceProvider::class);
 
 return $app;
