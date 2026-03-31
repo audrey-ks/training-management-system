@@ -1,15 +1,8 @@
 # Admin Email Notifications on User Login/Logout
 
-## Current Progress
-Updated: Plan approved (email to admins).
-
-## Remaining Steps
-- Test: Login as non-admin, check admin email (mail.log or storage/logs/laravel.log if MAIL_MAILER=log)
-
 ## Completed
-- 1. Events
-- 2. Notifications
-- 3. Listener
-4. EventServiceProvider registered
-- 5. AuthController updated
+- Plan approved and implemented (events, notifications, listener, AuthController, EventServiceProvider).
+- README.md updated to document the feature.
+- Test: Login as non-admin user and verify admin receives notification (check mail.log or storage/logs/laravel.log if using MAIL_MAILER=log).
 
+✅ Feature complete.
