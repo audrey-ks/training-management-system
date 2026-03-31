@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TrainingSessionSeeder::class,
             SessionEnrollmentSeeder::class,
+            TestMaterialSeeder::class,
         ]);
     }
 }
