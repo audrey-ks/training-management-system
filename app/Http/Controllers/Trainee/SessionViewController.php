@@ -6,6 +6,7 @@ use App\Models\SessionEnrollment;
 use App\Models\SessionMaterial;
 use App\Models\TrainingSession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SessionViewController extends Controller
@@ -13,7 +14,7 @@ class SessionViewController extends Controller
     public function index()
     {
         $trainee  = auth()->user();
-        $enrolled = $trainee->enrolledSessions()->pluck('training_sessions.id');
+        $enrolled = SessionEnrollment::where('trainee_id', $trainee->id)->pluck('session_id');
 
         $sessions = TrainingSession::whereIn('status', ['active', 'upcoming', 'completed'])
             ->withCount('materials', 'enrollments')
@@ -61,6 +62,16 @@ class SessionViewController extends Controller
 
     public function download(TrainingSession $session, SessionMaterial $material)
     {
+        Log::info('Download attempt', [
+            'user_id'         => auth()->id(),
+            'session_id'      => $session->id,
+            'material_id'     => $material->id,
+            'file_path'       => $material->file_path,
+            'enrolled'        => SessionEnrollment::where('session_id', $session->id)
+                ->where('trainee_id', auth()->id())->exists(),
+            'material_status' => $material->status,
+        ]);
+
         $trainee  = auth()->user();
         $enrolled = SessionEnrollment::where('session_id', $session->id)
             ->where('trainee_id', $trainee->id)->exists();
@@ -69,7 +80,7 @@ class SessionViewController extends Controller
             abort(403, 'You must be enrolled to download materials.');
         }
 
-        if ($material->status !== 'approved') {
+        if (! isset($material->status) || $material->status !== 'approved') {
             abort(403, 'This material is not available.');
         }
 
@@ -77,16 +88,16 @@ class SessionViewController extends Controller
             abort(404, 'File not found.');
         }
 
-        // If it's a Cloudinary URL, redirect directly to it
+        // Cloudinary or external URL - direct redirect
         if (str_starts_with($material->file_path, 'http')) {
             return redirect($material->file_path);
         }
 
-        // Fallback for local files
+        // Local storage - check symlink
         if (! Storage::disk('public')->exists($material->file_path)) {
-            abort(404, 'File not found.');
+            abort(404, 'File not found on server.');
         }
 
-        return Storage::disk('public')->download($material->file_path, $material->file_name);
+        return Storage::disk('public')->download($material->file_path, $material->file_name ?: basename($material->file_path));
     }
 }

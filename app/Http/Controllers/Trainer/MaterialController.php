@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SessionMaterial;
 use App\Models\TrainingSession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class MaterialController extends Controller
@@ -30,18 +31,25 @@ class MaterialController extends Controller
         $materialType = $this->detectMaterialType($file->getMimeType());
 
         // Upload to Cloudinary
-        $uploadedFile = cloudinary()->upload($file->getRealPath(), [
-            'folder' => "sessions/{$session->id}/materials",
-            'resource_type' => 'auto',
-            'type'          => 'upload',
-            'access_mode'   => 'public',
-            'public_id'     => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
-        ]);
+        try {
+            $uploadedFile = cloudinary()->upload($file->getRealPath(), [
+                'folder' => "sessions/{$session->id}/materials",
+                'resource_type' => 'auto',
+                'type'          => 'upload',
+                'access_mode'   => 'public',
+                'public_id'     => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            ]);
 
-        $path = $uploadedFile->getSecurePath();
+            $path = $uploadedFile->getSecurePath();
 
-        if (empty($path)) {
-            return back()->with('error', 'File upload failed. Please check permissions and try again.');
+            if (empty($path)) {
+                throw new Exception('Cloudinary path empty');
+            }
+        } catch (Exception $e) {
+            Log::error('Cloudinary upload failed: ' . $e->getMessage());
+            // Fallback to local storage
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path     = $file->storeAs('sessions/' . $session->id . '/materials', $filename, 'public');
         }
 
         SessionMaterial::create([
